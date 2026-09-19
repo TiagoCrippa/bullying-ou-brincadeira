@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bullying ou Brincadeira?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:ital,wght@0,600;0,700;0,800;1,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#33324A;
+    --ink-soft:#6C6B85;
+    --card:#FFFFFF;
+    --brinc:#22A06B;
+    --brinc-bg:#DFF6EC;
+    --bully:#E8556B;
+    --bully-bg:#FDE4E8;
+    --sun:#FFC24B;
+    --sky:#4F93F5;
+    --sky-bg:#E4EEFF;
+    --line:#EBE9F5;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Nunito',system-ui,sans-serif;
+    color:var(--ink);
+    background:linear-gradient(160deg,#FFF1D4 0%,#FFE1EA 48%,#DCEBFF 100%);
+    background-attachment:fixed;
+    min-height:100%;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:20px 16px 40px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .stage{width:100%;max-width:540px;margin:8px auto 0}
+  .card{max-width:540px;margin-left:auto;margin-right:auto}
+  .scene{display:none;border-radius:22px;overflow:hidden;margin:16px 0 2px;background:#F3F0FF}
+  .scene svg{display:block;width:100%;height:auto}
+  @media (min-width:820px){
+    .scene{display:block}
+    .card.play .emoji{display:none}
+  }
+
+  /* progress dots */
+  .dots{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;min-height:14px}
+  .dot{width:11px;height:11px;border-radius:50%;background:#FFFFFF9C;border:2px solid #ffffff;transition:transform .2s,background .2s}
+  .dot.done{background:var(--sun);border-color:var(--sun)}
+  .dot.now{background:var(--sky);border-color:var(--sky);transform:scale(1.35)}
+
+  .card{
+    background:var(--card);
+    border-radius:30px;
+    padding:30px 26px 28px;
+    box-shadow:0 18px 40px -18px rgba(70,60,120,.45), 0 4px 0 #ffffff inset;
+    text-align:center;
+    animation:pop .35s cubic-bezier(.2,.9,.3,1.2) both;
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+
+  .emoji{font-size:66px;line-height:1;display:block;margin-bottom:14px}
+  h1{font-family:'Fredoka',sans-serif;font-weight:700;font-size:2rem;line-height:1.1;color:var(--ink);letter-spacing:-.5px}
+  h1 .l1{color:var(--brinc)}
+  h1 .l2{color:var(--bully)}
+  h2{font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.5rem;line-height:1.15;margin-bottom:10px}
+  .lead{font-size:1.12rem;font-weight:700;color:var(--ink);line-height:1.45}
+  .sub{font-size:1rem;color:var(--ink-soft);font-weight:600;line-height:1.5;margin-top:12px}
+  .counter{font-family:'Fredoka',sans-serif;font-weight:600;color:var(--sky);font-size:1rem;margin-bottom:6px}
+
+  .situation{font-size:1.32rem;font-weight:800;line-height:1.4;margin-bottom:8px}
+
+  .btn{
+    font-family:'Fredoka',sans-serif;font-weight:600;
+    border:none;border-radius:20px;cursor:pointer;
+    font-size:1.15rem;padding:16px 22px;width:100%;
+    transition:transform .12s ease, box-shadow .12s ease, filter .12s;
+    color:#fff;
+  }
+  .btn:active{transform:translateY(3px)}
+  .btn:focus-visible{outline:4px solid #ffffff;outline-offset:3px}
+  .btn-start{background:var(--sky);box-shadow:0 6px 0 #2f6fd0;margin-top:20px}
+  .btn-start:active{box-shadow:0 3px 0 #2f6fd0}
+
+  .choices{display:flex;flex-direction:column;gap:14px;margin-top:22px}
+  .btn-brinc{background:var(--brinc);box-shadow:0 6px 0 #17784f}
+  .btn-brinc:active{box-shadow:0 3px 0 #17784f}
+  .btn-bully{background:var(--bully);box-shadow:0 6px 0 #b23b4f}
+  .btn-bully:active{box-shadow:0 3px 0 #b23b4f}
+  .btn-emoji{margin-right:8px}
+
+  /* reveal */
+  .reveal{margin-top:22px;animation:pop .3s ease both}
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'Fredoka',sans-serif;font-weight:700;font-size:1.25rem;
+    padding:10px 20px;border-radius:999px;margin-bottom:14px;
+  }
+  .badge.brinc{background:var(--brinc-bg);color:var(--brinc)}
+  .badge.bully{background:var(--bully-bg);color:var(--bully)}
+  .feedback{font-family:'Fredoka',sans-serif;font-weight:600;color:var(--ink-soft);margin-bottom:6px;font-size:1rem}
+  .reason{font-size:1.1rem;font-weight:700;line-height:1.5;color:var(--ink)}
+  .btn-next{background:var(--sun);color:#6a4a00;box-shadow:0 6px 0 #d99a1f;margin-top:22px}
+  .btn-next:active{box-shadow:0 3px 0 #d99a1f}
+
+  /* helper */
+  .help-toggle{
+    background:#ffffffcc;border:2px solid #fff;color:var(--sky);
+    font-family:'Fredoka',sans-serif;font-weight:600;font-size:.95rem;
+    border-radius:999px;padding:8px 16px;cursor:pointer;margin:0 auto 16px;display:block;
+  }
+  .help-toggle:focus-visible{outline:3px solid #fff;outline-offset:2px}
+  .helper{
+    background:var(--sky-bg);border-radius:22px;padding:18px 20px;margin-bottom:16px;
+    text-align:left;display:none;animation:pop .25s ease both;
+  }
+  .helper.show{display:block}
+  .helper h3{font-family:'Fredoka',sans-serif;color:var(--sky);font-size:1.05rem;margin-bottom:10px}
+  .helper ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+  .helper li{font-weight:700;font-size:1rem;line-height:1.35;padding-left:30px;position:relative}
+  .helper li span{position:absolute;left:0;top:-1px;font-size:1.1rem}
+
+  .final-list{text-align:left;margin:18px 0 4px;display:flex;flex-direction:column;gap:14px}
+  .final-list li{list-style:none;font-size:1.08rem;font-weight:700;line-height:1.45;padding-left:38px;position:relative}
+  .final-list li span{position:absolute;left:0;top:-2px;font-size:1.5rem}
+  .tiny{font-size:.85rem;color:var(--ink-soft);font-weight:700;margin-top:22px}
+
+  @media (max-width:380px){
+    .card{padding:26px 20px}
+    h1{font-size:1.75rem}
+    .situation{font-size:1.18rem}
+    .emoji{font-size:56px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .card,.reveal,.helper{animation:none}
+    .btn{transition:none}
+  }
+</style>
+</head>
+<body>
+  <main class="stage">
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <div id="screen" aria-live="polite"></div>
+  </main>
+
+<script>
+const situations = [
+  { emoji:"😄", text:"Ana e Bia fazem cócegas uma na outra e as duas caem na risada.",
+    answer:"brinc", reason:"As duas riem juntas e ficam felizes. Brincadeira é quando todo mundo se diverte." },
+  { emoji:"🎒", text:"Todo dia no recreio, um grupo esconde a mochila do João. Ele fica procurando quase chorando.",
+    answer:"bully", reason:"Acontece TODO dia e deixa o João triste. Machucar alguém de novo e de novo é bullying." },
+  { emoji:"🎂", text:"No aniversário, os amigos apertam o nariz do Pedro de brincadeira, e ele ri junto com todo mundo.",
+    answer:"brinc", reason:"O Pedro também está achando graça. Se a pessoa gosta e ri junto, é brincadeira." },
+  { emoji:"👓", text:"O Lucas chama a Maria de \u201Cquatro-olhos\u201D toda vez que ela usa óculos. Ela já pediu pra ele parar.",
+    answer:"bully", reason:"A Maria pediu pra parar e ele continua. Apelido que magoa e não para é bullying." },
+  { emoji:"🍽️", text:"Um grupo não deixa a Sofia sentar com eles na hora do almoço. Isso acontece todos os dias.",
+    answer:"bully", reason:"Deixar alguém de fora sempre, de propósito, também é bullying. Machuca por dentro." },
+  { emoji:"🙋", text:"Toda vez que a Clara responde na aula, um menino a imita pra turma rir dela. Ela fica com vergonha de participar.",
+    answer:"bully", reason:"Ele faz a turma rir DELA toda vez, e isso a envergonha. Repetir pra humilhar é bullying." },
+  { emoji:"🤗", text:"Os amigos deram um apelido carinhoso pra Júlia, e ela mesma adora esse apelido.",
+    answer:"brinc", reason:"A Júlia gosta do apelido! Quando a própria pessoa curte, é carinho, não bullying." },
+  { emoji:"📱", text:"No grupo da turma no celular, mandam mensagens xingando o Rafael e dizem pra ninguém brincar com ele.",
+    answer:"bully", reason:"Xingar e mandar todos excluírem o Rafael é bullying — e pela internet chamamos de cyberbullying." },
+  { emoji:"💦", text:"Na piscina, os amigos jogam água uns nos outros. Todos riem e continuam brincando juntos.",
+    answer:"brinc", reason:"Todos molham todos e ninguém fica de fora nem triste. Isso é diversão de verdade." },
+  { emoji:"😢", text:"Um colega mais forte empurra o Léo toda semana e diz que vai bater nele se ele contar pra alguém.",
+    answer:"bully", reason:"Ele machuca sempre e ainda ameaça. Isso é bullying grave — e o Léo PRECISA contar pra um adulto." },
+];
+
+/* ===== illustrated scene kit (desktop) ===== */
+// ---- reusable illustrated-scene kit (flat style, matches game palette) ----
+const SKIN=['#F7D3B0','#E9B78E','#C88C5E','#95603E'];
+function sh(cx,gy,rx){return `<ellipse cx="${cx}" cy="${gy+8}" rx="${rx}" ry="${rx*0.24}" fill="#2b2450" opacity=".08"/>`;}
+function hair(cx,cy,c,st){
+  if(st==='bun')   return `<circle cx="${cx}" cy="${cy-24}" r="9" fill="${c}"/><path d="M ${cx-26} ${cy-2} q 26 -30 52 0 q -26 -13 -52 0 Z" fill="${c}"/>`;
+  if(st==='long')  return `<path d="M ${cx-28} ${cy+22} q -6 -50 28 -50 q 34 0 28 50 q -8 -10 -13 -3 q -4 -30 -15 -30 q -11 0 -15 30 q -5 -7 -13 3 Z" fill="${c}"/>`;
+  if(st==='curly') return `<path d="M ${cx-27} ${cy-1} q 3 -20 12 -24 q 4 -8 12 -8 q 8 0 12 8 q 9 4 12 24 q -8 -11 -14 -8 q -4 -6 -10 -6 q -6 0 -10 6 q -6 -3 -14 8 Z" fill="${c}"/>`;
+  if(st==='side')  return `<path d="M ${cx-27} ${cy} q 4 -30 27 -30 q 23 0 27 30 q -10 -10 -20 -8 q 4 -8 -6 -10 q -20 4 -22 22 q -3 0 -6 4 Z" fill="${c}"/>`;
+  return `<path d="M ${cx-26} ${cy-1} q 26 -31 52 0 q -26 -14 -52 0 Z" fill="${c}"/>`;
+}
+function face(cx,cy,t){
+  const eye=(dx)=>`<circle cx="${cx+dx}" cy="${cy-2}" r="2.7" fill="#2b2450"/>`;
+  let e=eye(-8)+eye(8), m='', ex='';
+  if(t==='laugh'){
+    e=`<path d="M ${cx-12} ${cy-1} q 4 -5 8 0" stroke="#2b2450" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M ${cx+4} ${cy-1} q 4 -5 8 0" stroke="#2b2450" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+    m=`<path d="M ${cx-11} ${cy+6} q 11 14 22 0 Z" fill="#b8465e"/>`;
+    ex=`<ellipse cx="${cx-15}" cy="${cy+6}" rx="4" ry="3" fill="#ff9db0" opacity=".5"/><ellipse cx="${cx+15}" cy="${cy+6}" rx="4" ry="3" fill="#ff9db0" opacity=".5"/>`;
+  } else if(t==='happy'){ m=`<path d="M ${cx-9} ${cy+7} q 9 9 18 0" stroke="#2b2450" stroke-width="2.6" fill="none" stroke-linecap="round"/>`; }
+  else if(t==='sad'){ m=`<path d="M ${cx-9} ${cy+12} q 9 -8 18 0" stroke="#2b2450" stroke-width="2.6" fill="none" stroke-linecap="round"/>`; ex=`<path d="M ${cx+12} ${cy+2} q 3 7 0 10 q -3 -3 0 -10" fill="#5fb0f5"/>`; }
+  else if(t==='worry'){ e=`<circle cx="${cx-8}" cy="${cy}" r="2.7" fill="#2b2450"/><circle cx="${cx+8}" cy="${cy}" r="2.7" fill="#2b2450"/>`; m=`<path d="M ${cx-7} ${cy+10} q 7 -4 14 0" stroke="#2b2450" stroke-width="2.4" fill="none" stroke-linecap="round"/>`; ex=`<path d="M ${cx-13} ${cy-8} q 5 -3 9 -1" stroke="#2b2450" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M ${cx+4} ${cy-9} q 4 -2 9 1" stroke="#2b2450" stroke-width="2" fill="none" stroke-linecap="round"/>`; }
+  else if(t==='neutral'){ m=`<path d="M ${cx-7} ${cy+9} h 14" stroke="#2b2450" stroke-width="2.4" fill="none" stroke-linecap="round"/>`; }
+  else if(t==='smug'){ e=`<path d="M ${cx-12} ${cy-2} q 4 3 8 0" stroke="#2b2450" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M ${cx+4} ${cy-2} q 4 3 8 0" stroke="#2b2450" stroke-width="2.4" fill="none" stroke-linecap="round"/>`; m=`<path d="M ${cx-8} ${cy+8} q 10 6 16 -1" stroke="#2b2450" stroke-width="2.4" fill="none" stroke-linecap="round"/>`; }
+  return e+m+ex;
+}
+function glasses(cx,cy){return `<g stroke="#2b2450" stroke-width="2.4" fill="none"><circle cx="${cx-8}" cy="${cy-2}" r="6.5" fill="#cfe6ff" fill-opacity=".5"/><circle cx="${cx+8}" cy="${cy-2}" r="6.5" fill="#cfe6ff" fill-opacity=".5"/><path d="M ${cx-1.5} ${cy-2} h 3"/><path d="M ${cx-14.5} ${cy-3} l -5 -1"/><path d="M ${cx+14.5} ${cy-3} l 5 -1"/></g>`;}
+function arm(cx,cy,ang,shirt,len=30){return `<g transform="rotate(${ang} ${cx} ${cy})"><rect x="${cx-6}" y="${cy}" width="12" height="${len}" rx="6" fill="${shirt}"/><circle cx="${cx}" cy="${cy+len}" r="7" fill="#F7D3B0"/></g>`;}
+function kid(cx,gy,o={}){
+  const {skin=SKIN[0],hairC='#3A2C22',shirt='#4F93F5',f='happy',hs='short',acc=''}=o;
+  const headR=25, headCy=gy-86;
+  const body=`<path d="M ${cx-36} ${gy} C ${cx-40} ${gy-42} ${cx-26} ${gy-58} ${cx} ${gy-58} C ${cx+26} ${gy-58} ${cx+40} ${gy-42} ${cx+36} ${gy} Z" fill="${shirt}"/>`;
+  const neck=`<rect x="${cx-7}" y="${headCy+18}" width="14" height="14" rx="6" fill="${skin}"/>`;
+  const head=`<circle cx="${cx}" cy="${headCy}" r="${headR}" fill="${skin}"/>`;
+  return sh(cx,gy,38)+body+neck+head+hair(cx,headCy,hairC,hs)+face(cx,headCy,f)+acc;
+}
+function bubble(x,y,txt,bg='#fff',col='#8a6bff',w=58){
+  return `<g><rect x="${x}" y="${y}" width="${w}" height="30" rx="15" fill="${bg}"/><path d="M ${x+16} ${y+26} l -3 11 l 13 -8 Z" fill="${bg}"/><text x="${x+w/2}" y="${y+20}" font-size="15" text-anchor="middle" fill="${col}" font-family="Fredoka,sans-serif" font-weight="600">${txt}</text></g>`;
+}
+function emo(x,y,e,size=34){return `<text x="${x}" y="${y}" font-size="${size}" text-anchor="middle" dominant-baseline="central">${e}</text>`;}
+function spark(x,y){return `<g fill="#FFC24B"><path d="M ${x} ${y-7} l 2 5 l 5 2 l -5 2 l -2 5 l -2 -5 l -5 -2 l 5 -2 Z"/></g>`;}
+
+const GY=232;
+function wrap(inner,bg='#F3F0FF',floor='#E9E4FB'){
+  return `<svg viewBox="0 0 340 280" xmlns="http://www.w3.org/2000/svg" role="img">`+
+    `<rect width="340" height="280" rx="26" fill="${bg}"/>`+
+    `<path d="M0 214 q 170 -26 340 0 V280 H0 Z" fill="${floor}"/>`+
+    inner+`</svg>`;
+}
+
+const scenes = [
+  // 1 cócegas — brincadeira: duas rindo juntas + faíscas
+  wrap(
+    kid(122,GY,{skin:SKIN[1],hairC:'#7a4a2b',shirt:'#4F93F5',f:'laugh',hs:'bun'})+
+    kid(218,GY,{skin:SKIN[0],hairC:'#caa03a',shirt:'#E8556B',f:'laugh',hs:'long'})+
+    spark(96,120)+spark(250,110)+spark(170,96)+
+    bubble(150,70,'ha ha!','#fff','#4F93F5',66)
+  ),
+  // 2 mochila escondida — bullying: triste à esquerda; dois rindo escondendo mochila
+  wrap(
+    kid(96,GY,{skin:SKIN[2],hairC:'#2b2018',shirt:'#22A06B',f:'sad',hs:'short'})+
+    kid(206,GY,{skin:SKIN[0],hairC:'#7a4a2b',shirt:'#F0A93B',f:'smug',hs:'side'})+
+    kid(268,GY,{skin:SKIN[3],hairC:'#151013',shirt:'#8a6bff',f:'smug',hs:'curly'})+
+    emo(238,150,'🎒',30)+
+    bubble(196,66,'hehe','#fff','#E8556B',52)
+  ),
+  // 3 aniversário — brincadeira: bolo, chapéus, todos rindo
+  wrap(
+    `<g>${emo(60,60,'🎈',26)}${emo(285,58,'🎉',26)}</g>`+
+    kid(120,GY,{skin:SKIN[1],hairC:'#3A2C22',shirt:'#4F93F5',f:'laugh',hs:'short',acc:`<path d="M 108 ${GY-104} L 132 ${GY-104} L 120 ${GY-128} Z" fill="#FFC24B"/><circle cx="120" cy="${GY-128}" r="4" fill="#E8556B"/>`})+
+    kid(220,GY,{skin:SKIN[0],hairC:'#caa03a',shirt:'#E8556B',f:'laugh',hs:'long',acc:`<path d="M 208 ${GY-104} L 232 ${GY-104} L 220 ${GY-128} Z" fill="#22A06B"/><circle cx="220" cy="${GY-128}" r="4" fill="#4F93F5"/>`})+
+    emo(170,196,'🎂',40)
+  ),
+  // 4 "quatro-olhos" — bullying: Maria de óculos, triste; menino apontando/falando
+  wrap(
+    kid(120,GY,{skin:SKIN[1],hairC:'#5b3a22',shirt:'#22A06B',f:'sad',hs:'long',acc:glasses(120,GY-88)})+
+    kid(222,GY,{skin:SKIN[0],hairC:'#2b2018',shirt:'#F0A93B',f:'smug',hs:'short',acc:arm(196,GY-40,60,'#F0A93B',34)})+
+    bubble(196,64,'…','#FDE4E8','#E8556B',48)
+  ),
+  // 5 almoço, exclusão — bullying: mesa com grupo; Sofia de fora com bandeja
+  wrap(
+    kid(214,GY-6,{skin:SKIN[3],hairC:'#151013',shirt:'#4F93F5',f:'neutral',hs:'curly'})+
+    kid(268,GY-6,{skin:SKIN[1],hairC:'#7a4a2b',shirt:'#8a6bff',f:'neutral',hs:'short'})+
+    `<rect x="176" y="${GY-6}" width="140" height="16" rx="6" fill="#c9b98f"/><rect x="182" y="${GY+8}" width="12" height="26" rx="4" fill="#b6a473"/><rect x="298" y="${GY+8}" width="12" height="26" rx="4" fill="#b6a473"/>`+
+    kid(86,GY,{skin:SKIN[2],hairC:'#2b2018',shirt:'#22A06B',f:'sad',hs:'bun'})+
+    `<rect x="66" y="${GY-30}" width="40" height="9" rx="4" fill="#dcd3f5"/>`+
+    `<path d="M120 150 h 40" stroke="#c9b7f0" stroke-width="3" stroke-dasharray="5 6" stroke-linecap="round"/>`
+  ),
+  // 6 imitam Clara — bullying: Clara de mão erguida, envergonhada; menino imitando; lousa
+  wrap(
+    `<rect x="30" y="46" width="150" height="70" rx="8" fill="#2f7d5a"/><rect x="30" y="46" width="150" height="70" rx="8" fill="none" stroke="#245f45" stroke-width="3"/><path d="M46 70 h60 M46 84 h90 M46 98 h50" stroke="#bfe3cf" stroke-width="3" stroke-linecap="round"/>`+
+    kid(120,GY,{skin:SKIN[1],hairC:'#5b3a22',shirt:'#4F93F5',f:'worry',hs:'long',acc:arm(140,GY-52,-24,'#4F93F5',34)})+
+    kid(228,GY,{skin:SKIN[0],hairC:'#2b2018',shirt:'#F0A93B',f:'smug',hs:'short',acc:arm(248,GY-52,-30,'#F0A93B',34)})+
+    bubble(206,60,'hã hã','#FDE4E8','#E8556B',58),
+    '#EAF3FF','#DCEBFF'
+  ),
+  // 7 apelido carinhoso — brincadeira: Júlia feliz com coração; amiga sorrindo
+  wrap(
+    kid(140,GY,{skin:SKIN[2],hairC:'#2b2018',shirt:'#8a6bff',f:'laugh',hs:'curly'})+
+    kid(232,GY,{skin:SKIN[0],hairC:'#caa03a',shirt:'#22A06B',f:'happy',hs:'long'})+
+    emo(96,110,'💛',30)+emo(268,96,'💚',24)+
+    bubble(150,66,'😄','#fff','#4F93F5',44)
+  ),
+  // 8 cyberbullying — bullying: celulão com mensagens raivosas + criança triste
+  wrap(
+    `<g transform="translate(150 60)"><rect x="0" y="0" width="118" height="150" rx="18" fill="#2b2450"/><rect x="8" y="10" width="102" height="130" rx="10" fill="#fff"/>`+
+    `<rect x="18" y="24" width="60" height="20" rx="10" fill="#FDE4E8"/><text x="48" y="38" font-size="13" text-anchor="middle" fill="#E8556B" font-family="Fredoka,sans-serif" font-weight="600">@#!*</text>`+
+    `<rect x="40" y="52" width="60" height="20" rx="10" fill="#FDE4E8"/><text x="70" y="66" font-size="13" text-anchor="middle" fill="#E8556B" font-family="Fredoka,sans-serif" font-weight="600">!!!</text>`+
+    `<rect x="18" y="80" width="54" height="20" rx="10" fill="#FDE4E8"/><text x="45" y="94" font-size="13" text-anchor="middle" fill="#E8556B" font-family="Fredoka,sans-serif" font-weight="600">grr</text>`+
+    `<circle cx="90" cy="120" r="14" fill="#E8556B"/><text x="90" y="121" font-size="15" text-anchor="middle" dominant-baseline="central">😠</text></g>`+
+    kid(78,GY,{skin:SKIN[1],hairC:'#3A2C22',shirt:'#22A06B',f:'sad',hs:'short'}),
+    '#EFEAFB','#E4DDF6'
+  ),
+  // 9 piscina, água — brincadeira: todos rindo, respingos
+  wrap(
+    kid(126,GY-4,{skin:SKIN[0],hairC:'#3A2C22',shirt:'#4F93F5',f:'laugh',hs:'short'})+
+    kid(216,GY-4,{skin:SKIN[2],hairC:'#151013',shirt:'#E8556B',f:'laugh',hs:'bun'})+
+    `<path d="M0 ${GY+2} q 170 -22 340 0 V280 H0 Z" fill="#8fc7ff"/><path d="M0 ${GY+2} q 170 -22 340 0" fill="none" stroke="#bfe0ff" stroke-width="4"/>`+
+    emo(172,150,'💦',30)+emo(96,150,'💦',22)+emo(250,140,'💦',24),
+    '#E4F1FF','#8fc7ff'
+  ),
+  // 10 empurrão + ameaça — bullying: maior (sério) e Léo menor (assustado)
+  wrap(
+    kid(214,GY,{skin:SKIN[3],hairC:'#151013',shirt:'#F0A93B',f:'smug',hs:'short',acc:arm(190,GY-46,58,'#F0A93B',36)})+
+    kid(110,GY+18,{skin:SKIN[1],hairC:'#5b3a22',shirt:'#22A06B',f:'worry',hs:'short'})+
+    bubble(150,70,'!','#FDE4E8','#E8556B',40)
+  ),
+];
+
+const screen = document.getElementById('screen');
+const dotsEl = document.getElementById('dots');
+let state = 'start';
+let idx = 0;
+let answered = false;
+
+function buildDots(){
+  dotsEl.innerHTML = '';
+  situations.forEach((_,i)=>{
+    const d = document.createElement('span');
+    d.className = 'dot' + (state==='play' && i<idx ? ' done' : '') + (state==='play' && i===idx ? ' now' : '');
+    if(state!=='play' && (state==='rights'||state==='help'||state==='end')) d.classList.add('done');
+    dotsEl.appendChild(d);
+  });
+  dotsEl.style.display = (state==='start') ? 'none' : 'flex';
+}
+
+function render(){
+  buildDots();
+  if(state==='start') return renderStart();
+  if(state==='play') return renderPlay();
+  if(state==='rights') return renderRights();
+  if(state==='help') return renderHelp();
+  if(state==='end') return renderEnd();
+}
+
+function renderStart(){
+  screen.innerHTML = `
+    <div class="card">
+      <span class="emoji">🤔</span>
+      <h1><span class="l1">Bullying</span> ou <span class="l2">Brincadeira</span>?</h1>
+      <p class="sub">Vamos ler várias situações juntos. Em cada uma, você decide: é uma brincadeira boa ou é bullying?</p>
+      <button class="btn btn-start" id="go">Começar</button>
+    </div>`;
+  document.getElementById('go').onclick = ()=>{ state='play'; idx=0; answered=false; render(); };
+}
+
+function renderPlay(){
+  const s = situations[idx];
+  answered = false;
+  screen.innerHTML = `
+    <button class="help-toggle" id="ht">Como saber? 💡</button>
+    <div class="helper" id="helper">
+      <h3>3 perguntas mágicas</h3>
+      <ul>
+        <li><span>😊</span>Todo mundo está se divertindo, ou tem alguém triste?</li>
+        <li><span>🔁</span>Aconteceu uma vez só, ou acontece de novo e de novo?</li>
+        <li><span>🛑</span>Quando a pessoa pede pra parar, para mesmo?</li>
+      </ul>
+    </div>
+    <div class="card play">
+      <div class="counter">Situação ${idx+1} de ${situations.length}</div>
+      <span class="emoji">${s.emoji}</span>
+      <p class="situation">${s.text}</p>
+      <div class="scene" aria-hidden="true">${scenes[idx]||''}</div>
+      <div class="choices" id="choices">
+        <button class="btn btn-brinc" data-a="brinc"><span class="btn-emoji">💚</span>Brincadeira</button>
+        <button class="btn btn-bully" data-a="bully"><span class="btn-emoji">💔</span>Bullying</button>
+      </div>
+    </div>`;
+  const helper = document.getElementById('helper');
+  document.getElementById('ht').onclick = ()=> helper.classList.toggle('show');
+  document.querySelectorAll('#choices .btn').forEach(b=>{
+    b.onclick = ()=> reveal(b.dataset.a);
+  });
+}
+
+function reveal(picked){
+  if(answered) return;
+  answered = true;
+  const s = situations[idx];
+  const correct = picked === s.answer;
+  const isBrinc = s.answer === 'brinc';
+  const badgeTxt = isBrinc ? '💚 Brincadeira' : '💔 Bullying';
+  const feel = correct ? 'Boa! Você percebeu 👏' : 'Quase! Olha só 👀';
+  const isLast = idx === situations.length - 1;
+  const choices = document.getElementById('choices');
+  choices.innerHTML = `
+    <div class="reveal">
+      <div class="badge ${isBrinc?'brinc':'bully'}">${badgeTxt}</div>
+      <p class="feedback">${feel}</p>
+      <p class="reason">${s.reason}</p>
+      <button class="btn btn-next" id="next">${isLast?'Terminar ✨':'Próxima →'}</button>
+    </div>`;
+  document.getElementById('next').onclick = ()=>{
+    if(isLast){ state='rights'; render(); }
+    else { idx++; render(); }
+  };
+  document.getElementById('next').focus();
+}
+
+function renderRights(){
+  screen.innerHTML = `
+    <div class="card">
+      <span class="emoji">🌟</span>
+      <h2>Você tem direitos!</h2>
+      <p class="lead">As leis do Brasil dizem que toda criança merece respeito e carinho.</p>
+      <p class="sub">Ninguém pode te machucar, te humilhar ou te deixar de fora de propósito. Isso está escrito até na lei mais importante do país — a Constituição — que protege a dignidade de cada pessoa.</p>
+      <button class="btn btn-start" id="go">Continuar</button>
+    </div>`;
+  document.getElementById('go').onclick = ()=>{ state='help'; render(); };
+}
+
+function renderHelp(){
+  screen.innerHTML = `
+    <div class="card">
+      <span class="emoji">🫶</span>
+      <h2>Peça ajuda. Sempre.</h2>
+      <ul class="final-list">
+        <li><span>🧑‍🏫</span>Se alguém te trata assim — ou se você vê acontecer com um colega — conte pra um adulto de confiança.</li>
+        <li><span>👨‍👩‍👧</span>Pode ser um professor, o diretor, sua mãe, seu pai, seus avós.</li>
+        <li><span>🦸</span>Pedir ajuda não é ser dedo-duro. É ser corajoso!</li>
+      </ul>
+      <button class="btn btn-start" id="go">Continuar</button>
+    </div>`;
+  document.getElementById('go').onclick = ()=>{ state='end'; render(); };
+}
+
+function renderEnd(){
+  screen.innerHTML = `
+    <div class="card">
+      <span class="emoji">💛</span>
+      <h2>Todo mundo merece se sentir<br>seguro e feliz na escola.</h2>
+      <p class="sub">Obrigado por participar! Trate os colegas do jeito que você gosta de ser tratado.</p>
+      <button class="btn btn-start" id="again">Jogar de novo 🔁</button>
+    </div>`;
+  document.getElementById('again').onclick = ()=>{ state='start'; idx=0; answered=false; render(); };
+}
+
+render();
+</script>
+</body>
+</html>
